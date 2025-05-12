@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from scipy.io import loadmat
 import matplotlib.pyplot as plt
 matriz_4d = np.random.rand(20, 30, 20, 100)  
 matriz_3d = matriz_4d[0]
@@ -19,23 +20,46 @@ def cargar_mat(path):
 def cargar_csv(path):
     return pd.read_csv(path)
 
-def suma(array, eje=None): 
-    return np.sum(array, axis=eje)
+def suma(array, eje=None): return np.sum(array, axis=eje)
 
-def rest(array, eje=None): 
-    return np.subtract.reduce(array, axis=eje) if len(array) > 1 else array
+def rest(array, eje=None): return np.subtract.reduce(array, axis=eje) if len(array) > 1 else array
 
-def mult(array, eje=None): 
-    return np.prod(array, axis=eje)
+def mult(array, eje=None): return np.prod(array, axis=eje)
 
-def div(array, eje=None): 
-    return np.divide(array[0], array[1]) if len(array) == 2 else array
+def div(array, eje=None): return np.divide(array[0], array[1]) if len(array) == 2 else array
 
-def log(array): 
-    return np.log(array)
+def log(array): return np.log(array)
 
-def media(array, eje=None): 
-    return np.mean(array, axis=eje)
+def media(array, eje=None): return np.mean(array, axis=eje)
 
-def des(array, eje=None): 
-    return np.std(array, axis=eje)
+def des(array, eje=None): return np.std(array, axis=eje)
+
+def analisis_kaggle_csv(ruta_csv, columnas, operacion):
+    try:
+        df = pd.read_csv(ruta_csv)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"El archivo {ruta_csv} no se encuentra en la ruta proporcionada.")
+
+    if not all(col in df.columns for col in columnas):
+        raise ValueError("Una o más columnas no existen en el archivo")
+
+    if operacion == 'suma':
+        resultado = df[columnas].sum()
+    elif operacion == 'resta':
+        resultado = df[columnas[0]] - df[columnas[1]]
+    elif operacion == 'multiplicacion':
+        resultado = df[columnas].prod(axis=1)
+    elif operacion == 'division':
+        resultado = df[columnas[0]] / df[columnas[1]]
+    elif operacion == 'logaritmo':
+        resultado = np.log(df[columnas])
+    elif operacion == 'promedio':
+        resultado = df[columnas].mean()
+    elif operacion == 'desviacion':
+        resultado = df[columnas].std()
+    else:
+        raise ValueError("Operación no válida")
+
+    print(f"\nResultado de '{operacion}' sobre {columnas}:")
+    print(resultado)
+    return resultado
