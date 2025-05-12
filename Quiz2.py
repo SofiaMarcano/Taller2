@@ -63,3 +63,16 @@ def analisis_kaggle_csv(ruta_csv, columnas, operacion):
     print(f"\nResultado de '{operacion}' sobre {columnas}:")
     print(resultado)
     return resultado
+def conf_gra(titulo, xlabel, ylabel):
+    plt.title(titulo, fontsize=14, pad=20)
+    plt.xlabel(xlabel, fontsize=12)
+    plt.ylabel(ylabel, fontsize=12)
+    plt.grid(True, linestyle='--', alpha=0.4)
+    plt.tight_layout()
+    plt.show()
+
+def ask_titulos():
+    titulo = input("Título del gráfico [default: 'Gráfico']: ") or "Gráfico"
+    x = input("Etiqueta eje X [default: 'X']: ") or "X"
+    y = input("Etiqueta eje Y [default: 'Y']: ") or "Y"
+    return titulo, x, y
