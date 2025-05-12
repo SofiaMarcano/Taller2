@@ -180,14 +180,126 @@ def submenu_pie(data):
             data['GlucoseLevel'] = pd.cut(data['Glucose'], bins=[0,70,100,125,200,300], labels=['Hipoglucemia','Normal','Prediabetes','Diabetes','Hiperglucemia'])
             graf_pie(data, column='GlucoseLevel', title='Niveles de Glucosa', colors=['#2ecc71','#3498db','#f1c40f','#e67e22','#e74c3c'])
         elif opcion == 4:
-            print("\nColumnas disponibles:", list(data.columns))
-            col = input("Columna para graficar: ")
-            if col not in data.columns:
-                print("Columna no válida"); continue
+            print("\nColumnas disponibles:")
+            for i, col in enumerate(data.columns):
+                print(f"{i+1}: {col}")
+                
+            try:
+                idx = rev_num("Número de columna para graficar: "))
+                col = data.columns[idx]
+            except (ValueError, IndexError):
+                print("Índice no válido")
+                continue
             titulo = input("Título del gráfico [Enter para default]: ")
             colores = input("Colores separados por coma: ").split(',')
+
             graf_pie(data, column=col, title=titulo or f"Distribución de {col}", colors=colores if colores else None)
-        elif opcion == '5':
+
+        elif opcion == 5:
             break
         else:
             print("Opción no válida.")
+def menu():
+    analizador = Analizador(matriz_3d)
+    diabetes_data = None
+    while True:
+        print("\n=== MENÚ PRINCIPAL ===")
+        print("1. Análisis de matrices")
+        print("2. Visualización de datos")
+        print("3. Análisis de diabetes.csv")
+        print("4. Salir")
+        opcion = rev_num("Seleccione una opción (1-4): ")
+        if opcion == 1:
+            analizador.resume()
+            print("\nEstadísticas básicas:")
+            print(analizador.apply_numpy())
+        elif opcion == 2:
+            while True:
+                print("\n=== VISUALIZACIÓN DE DATOS ===")
+                print("1. Histograma")
+                print("2. Gráfico de tallo")
+                print("3. Gráfico de barras")
+                print("4. Gráfico de torta")
+                print("5. Subplots")
+                print("6. Volver")
+                sub_op = rev_num("Seleccione una visualización (1-6): ")
+                if sub_op == 1: analizador.gra_histo()
+                elif sub_op == 2: analizador.gra_stem()
+                elif sub_op == 3: analizador.graf_barras()
+                elif sub_op == 4:
+                    if diabetes_data is None:
+                        try:
+                            diabetes_data = pd.read_csv('diabetes.csv')
+                            print("\nDataset cargado correctamente")
+                        except Exception as e:
+                            print(f"\nError: {str(e)}"); continue
+                    submenu_pie(diabetes_data)
+                elif sub_op ==5:
+                    modo = rev_num("Modo de subplots \n1.vertical\n2.horizontal\n3.diagonal): ")
+                    analizador.see_subplots(modo=modo)
+                elif sub_op == 6: break
+                else: print("Opción no válida")
+        elif opcion == 3:
+            if diabetes_data is None:
+                try:
+                    diabetes_data = pd.read_csv('diabetes.csv')
+                    print("\nDataset cargado correctamente")
+                except Exception as e:
+                    print(f"\nError: {str(e)}"); continue
+            while True:
+                print("\n=== ANÁLISIS DIABETES ===")
+                print("1. Gráfico de distribución")
+                print("2. Análisis de columnas")
+                print("3. Volver")
+                sub_op = rev_num("Seleccione una opción (1-3): ")
+                if sub_op == 1: graf_pie(diabetes_data)
+                elif sub_op == '2':
+                    print("\nColumnas disponibles:")
+                    for i, col in enumerate(diabetes_data.columns):
+                        print(f"{i}: {col}")
+                    
+                    try:
+                        n =rev_num("¿Cuántas columnas desea ingresar?: "))
+                        indices = []
+                        for i in range(n):
+                            idx = rev_num(f"Ingrese el índice de la columna #{i+1}: "))
+                            indices.append(idx)
+                        cols = [diabetes_data.columns[i] for i in indices]
+                    except (ValueError, IndexError):
+                        print("Índices no válidos")
+                        continue
+                    print("\nOperaciones disponibles:")
+                    print("1. suma")
+                    print("2. resta")
+                    print("3. multiplicacion")
+                    print("4. division")
+                    print("5. promedio")
+                    print("6. desviacion")
+
+                    opciones = {
+                        '1': 'suma',
+                        '2': 'resta',
+                        '3': 'multiplicacion',
+                        '4': 'division',
+                        '5': 'promedio',
+                        '6': 'desviacion'
+                    }
+
+                    op = rev_num("Seleccione el número de la operación: ")
+                    operacion = opciones.get(op)
+                    if not operacion:
+                        print("Opción no válida")
+                        continue
+                    analisis_kaggle_csv('diabetes.csv', cols, operacion)
+
+                elif sub_op == 3: break
+                else: print("Opción no válida")
+        elif opcion == 4:
+            print("Saliendo del programa...")
+            break
+        else:
+            print("Opción no válida. Intente nuevamente.")
+
+if __name__ == "__main__":
+    menu()
+
