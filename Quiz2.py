@@ -106,3 +106,21 @@ def graf_pie(data, column='Outcome', title=None, colors=None):
     plt.title(title or f"Distribución de {column}", fontsize=14, pad=20)
     plt.tight_layout()
     plt.show()
+
+def see_subplots(data1, data2, data3, modo='vertical'):
+    figsize = (10, 8) if modo == 'vertical' else (12, 4) if modo == 'horizontal' else (10, 8)
+    plt.figure(figsize=figsize)
+    if modo == 'vertical':
+        for i, data in enumerate([data1, data2, data3]):
+            plt.subplot(3, 1, i+1)
+            plt.plot(data)
+    elif modo == 'horizontal':
+        for i, data in enumerate([data1, data2, data3]):
+            plt.subplot(1, 3, i+1)
+            plt.plot(data)
+    elif modo == 'diagonal':
+        plt.subplot(2, 2, 1); plt.plot(data1)
+        plt.subplot(2, 2, 4); plt.plot(data2)
+        plt.subplot(2, 2, 2); plt.plot(data3)
+    plt.tight_layout()
+    plt.show()
