@@ -124,3 +124,70 @@ def see_subplots(data1, data2, data3, modo='vertical'):
         plt.subplot(2, 2, 2); plt.plot(data3)
     plt.tight_layout()
     plt.show()
+class Analizador:
+    def __init__(self, matriz):
+        self.matriz = matriz
+        self.df = conv_dataframe(matriz.reshape(-1, matriz.shape[-1]))
+
+    def resume(self):
+        see_atributos(self.matriz)
+
+    def a_dataframe(self):
+        return self.df
+
+    def apply_numpy(self):
+        return {'suma': suma(self.matriz), 'promedio': media(self.matriz), 'desviacion': des(self.matriz)}
+
+    def gra_histo(self):
+        gra_histo(self.matriz.flatten())
+
+    def gra_stem(self):
+        gra_stem(self.matriz.flatten())
+
+    def graf_barras(self):
+        graf_barras(self.matriz.flatten())
+
+    def graf_pie(self):
+        graf_pie(pd.DataFrame(self.matriz.flatten()), column=0, title="Distribución de valores")
+
+    def see_subplots(self, modo='vertical'):
+        d1 = self.matriz[0].flatten()
+        d2 = self.matriz[1].flatten()
+        d3 = self.matriz[2].flatten()
+        see_subplots(d1, d2, d3, modo=modo)
+def rev_num(msj):
+    while True:
+        try:
+            x=int(input(msj))
+            return x
+        except:
+            print("Ingrese un numero entero.")
+def submenu_pie(data):
+    while True:
+        print("\n=== SUBMENÚ GRÁFICOS DE TORTA ===")
+        print("1. Distribución básica")
+        print("2. Por grupos de edad")
+        print("3. Por niveles de glucosa")
+        print("4. Personalizado completo")
+        print("5. Volver")
+        opcion = rev_num("Seleccione una opción (1-5): ")
+        if opcion == 1:
+            graf_pie(data, column='Outcome', title='Distribución Diabetes/No Diabetes')
+        elif opcion == 2:
+            data['AgeGroup'] = pd.cut(data['Age'], bins=[0,30,45,60,100], labels=['<30','30-45','45-60','>60'])
+            graf_pie(data, column='AgeGroup', title='Distribución por Grupos de Edad')
+        elif opcion == 3:
+            data['GlucoseLevel'] = pd.cut(data['Glucose'], bins=[0,70,100,125,200,300], labels=['Hipoglucemia','Normal','Prediabetes','Diabetes','Hiperglucemia'])
+            graf_pie(data, column='GlucoseLevel', title='Niveles de Glucosa', colors=['#2ecc71','#3498db','#f1c40f','#e67e22','#e74c3c'])
+        elif opcion == 4:
+            print("\nColumnas disponibles:", list(data.columns))
+            col = input("Columna para graficar: ")
+            if col not in data.columns:
+                print("Columna no válida"); continue
+            titulo = input("Título del gráfico [Enter para default]: ")
+            colores = input("Colores separados por coma: ").split(',')
+            graf_pie(data, column=col, title=titulo or f"Distribución de {col}", colors=colores if colores else None)
+        elif opcion == '5':
+            break
+        else:
+            print("Opción no válida.")
